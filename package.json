@@ -1,0 +1,16 @@
+{
+  "name": "smart-tv-control-server",
+  "version": "1.0.0",
+  "description": "Proof of Concept for Smart TV Control Server",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}
