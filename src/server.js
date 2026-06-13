@@ -38,6 +38,7 @@ io.on('connection', (socket) => {
 
     // Relay screen frames from TV to Dashboard
     socket.on('screen_frame', (data) => {
+        console.log("DEBUG: Server received frame from:", data.deviceId, "Frame size:", data.frame.length);
         io.to('dashboard').emit('stream_frame_render', { deviceId: socket.deviceId, frame: data.frame });
     });
 
