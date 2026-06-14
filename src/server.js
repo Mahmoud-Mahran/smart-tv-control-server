@@ -29,6 +29,7 @@ io.on('connection', (socket) => {
     // Identify if connection is Dashboard or TV
     socket.on('register', (data) => {
         socket.join(data.role); // 'dashboard' or 'tv'
+        socket.role = data.role;
         if (data.role === 'tv') {
             socket.deviceId = data.deviceId;
             console.log(`TV Registered: ${data.deviceId}`);
@@ -38,7 +39,7 @@ io.on('connection', (socket) => {
 
     // Relay screen frames from TV to Dashboard
     socket.on('screen_frame', (data) => {
-        console.log("DEBUG: Server received frame from:", data.deviceId, "Frame size:", data.frame.length);
+        console.log(`[${new Date().toISOString()}] DEBUG: Server received frame from:`, data.deviceId, "Frame size:", data.frame.length);
         io.to('dashboard').emit('stream_frame_render', { deviceId: socket.deviceId, frame: data.frame });
     });
 
@@ -48,8 +49,12 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        if (socket.deviceId) {
+        if (socket.role === 'tv' && socket.deviceId) {
             io.to('dashboard').emit('tv_status_change', { deviceId: socket.deviceId, status: 'offline' });
+        } else if (socket.role === 'dashboard') {
+            // If the operator closes the browser, ensure TVs stop capturing to save resources
+            console.log("Dashboard disconnected. Halting all TV streams.");
+            io.to('tv').emit('execute_command', { action: 'stop_stream' });
         }
     });
 });

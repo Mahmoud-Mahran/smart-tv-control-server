@@ -308,6 +308,59 @@
             box-shadow: 0 0 12px var(--accent-green);
         }
 
+        /* Toggle Switch */
+        .device-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: var(--text-muted);
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: rgba(0, 242, 254, 0.2);
+            border-color: var(--accent-cyan);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+            background-color: var(--accent-cyan);
+            box-shadow: 0 0 8px var(--accent-cyan);
+        }
+
         /* Panel 2: Live Monitor Viewer */
         .stream-view-container {
             flex: 1;
@@ -405,6 +458,54 @@
             background: rgba(239, 68, 68, 0.2);
             box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
         }
+
+        /* D-Pad Layout */
+        .dpad-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 6px;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 24px auto;
+        }
+
+        .dpad-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dpad-btn:hover {
+            background: rgba(0, 242, 254, 0.15);
+            border-color: var(--accent-cyan);
+            transform: scale(1.05);
+        }
+        
+        .dpad-btn:active {
+            transform: scale(0.95);
+        }
+
+        .dpad-up { grid-column: 2; grid-row: 1; }
+        .dpad-left { grid-column: 1; grid-row: 2; }
+        .dpad-center { 
+            grid-column: 2; 
+            grid-row: 2; 
+            background: rgba(0, 242, 254, 0.1); 
+            border-color: rgba(0, 242, 254, 0.3);
+            font-family: 'Outfit', sans-serif;
+            font-weight: bold;
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
+        }
+        .dpad-right { grid-column: 3; grid-row: 2; }
+        .dpad-down { grid-column: 2; grid-row: 3; }
 
         .form-section {
             display: flex;
@@ -616,6 +717,23 @@
             <div class="panel">
                 <h2 class="panel-title">MDM Device Controller</h2>
 
+                <!-- D-Pad Directional Controls -->
+                <div class="dpad-container">
+                    <div class="dpad-btn dpad-up" onclick="triggerCommand('keyevent', 'dpad_up')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                    </div>
+                    <div class="dpad-btn dpad-left" onclick="triggerCommand('keyevent', 'dpad_left')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </div>
+                    <div class="dpad-btn dpad-center" onclick="triggerCommand('keyevent', 'dpad_center')">OK</div>
+                    <div class="dpad-btn dpad-right" onclick="triggerCommand('keyevent', 'dpad_right')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                    <div class="dpad-btn dpad-down" onclick="triggerCommand('keyevent', 'dpad_down')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                </div>
+
                 <div class="controls-grid">
                     <button class="ctrl-btn power-btn" onclick="triggerCommand('power')">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -718,6 +836,7 @@
         let socket;
         let registeredTVs = new Map();
         let selectedTVDeviceId = null;
+        let activeStreamDeviceId = null;
         let authToken = null;
 
         // Auto-login configuration checker
@@ -818,6 +937,9 @@
                     registeredTVs.delete(data.deviceId);
                     if (selectedTVDeviceId === data.deviceId) {
                         selectedTVDeviceId = null;
+                    }
+                    if (activeStreamDeviceId === data.deviceId) {
+                        activeStreamDeviceId = null;
                         updateStreamUI();
                     }
                 }
@@ -825,7 +947,7 @@
             });
 
             socket.on('stream_frame_render', (data) => {
-                if (selectedTVDeviceId === data.deviceId) {
+                if (activeStreamDeviceId === data.deviceId) {
                     const screenImg = document.getElementById('tvScreenStream');
                     const placeholder = document.getElementById('streamPlaceholder');
 
@@ -872,24 +994,56 @@
                 const li = document.createElement('li');
                 li.className = `device-item ${selectedTVDeviceId === tv.deviceId ? 'active' : ''}`;
                 li.onclick = () => selectTV(tv.deviceId);
+                
+                const isStreaming = activeStreamDeviceId === tv.deviceId;
+                
                 li.innerHTML = `
                     <div class="device-info">
                         <span class="device-name">${escapeHtml(tv.deviceId)}</span>
                         <span class="device-meta">Role: Android Client</span>
                     </div>
-                    <span class="status-dot online"></span>
+                    <div class="device-actions" onclick="event.stopPropagation()">
+                        <label class="switch" title="Toggle Live Stream">
+                            <input type="checkbox" onchange="toggleStream('${tv.deviceId}', this.checked)" ${isStreaming ? 'checked' : ''}>
+                            <span class="slider"></span>
+                        </label>
+                        <span class="status-dot online"></span>
+                    </div>
                 `;
                 listContainer.appendChild(li);
             });
         }
 
+        function toggleStream(deviceId, isChecked) {
+            if (isChecked) {
+                // Stop any existing stream
+                if (activeStreamDeviceId && activeStreamDeviceId !== deviceId) {
+                    socket.emit('admin_command', { deviceId: activeStreamDeviceId, action: 'stop_stream' });
+                }
+                activeStreamDeviceId = deviceId;
+                
+                // Automatically select this TV for MDM commands when starting its stream
+                selectedTVDeviceId = deviceId;
+                
+                logEvent("UI_EVENT", `Requested live stream for: ${deviceId}`);
+                socket.emit('admin_command', { deviceId: deviceId, action: 'start_stream' });
+            } else {
+                if (activeStreamDeviceId === deviceId) {
+                    logEvent("UI_EVENT", `Stopped live stream for: ${deviceId}`);
+                    socket.emit('admin_command', { deviceId: deviceId, action: 'stop_stream' });
+                    activeStreamDeviceId = null;
+                }
+            }
+            updateTVListUI();
+            updateStreamUI();
+        }
+
         function selectTV(deviceId) {
             selectedTVDeviceId = deviceId;
-            logEvent("UI_EVENT", `Selected active device stream: ${deviceId}`);
+            logEvent("UI_EVENT", `Selected device for MDM commands: ${deviceId}`);
 
             // Highlight selected item
             updateTVListUI();
-            updateStreamUI();
         }
 
         function updateStreamUI() {
@@ -898,8 +1052,8 @@
             const overlay = document.getElementById('streamStatusOverlay');
             const label = document.getElementById('activeDeviceIdLabel');
 
-            if (selectedTVDeviceId) {
-                label.innerText = selectedTVDeviceId.toUpperCase();
+            if (activeStreamDeviceId) {
+                label.innerText = activeStreamDeviceId.toUpperCase();
                 overlay.style.display = 'flex';
                 // Screen stream will be activated when frame arrives
             } else {

@@ -4,7 +4,8 @@
   "description": "Proof of Concept for Smart TV Control Server",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "start:tunnel": "npx ngrok http 3000"
   },
   "keywords": [],
   "author": "",
