@@ -13,16 +13,16 @@
         rel="stylesheet">
     <style>
         :root {
-            --bg-color: #080B10;
-            --card-bg: rgba(17, 24, 39, 0.7);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --accent-cyan: #00f2fe;
-            --accent-purple: #4facfe;
+            --bg-color: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --border-color: #E2E8F0;
+            --accent-cyan: #0284c7;
+            --accent-purple: #2563eb;
             --accent-green: #10B981;
             --accent-red: #EF4444;
-            --text-main: #F3F4F6;
-            --text-muted: #9CA3AF;
-            --glass-blur: blur(16px);
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --glass-blur: blur(0px);
         }
 
         * {
@@ -34,9 +34,6 @@
 
         body {
             background-color: var(--bg-color);
-            background-image:
-                radial-gradient(at 10% 10%, rgba(79, 172, 254, 0.1) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(0, 242, 254, 0.08) 0px, transparent 50%);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
@@ -54,9 +51,7 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 24px;
-            backdrop-filter: var(--glass-blur);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
-                0 0 40px rgba(0, 242, 254, 0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             text-align: center;
             z-index: 10;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -105,8 +100,8 @@
         .input-group input {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
+            background: #F1F5F9;
+            border: 1px solid #CBD5E1;
             border-radius: 12px;
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
@@ -116,18 +111,18 @@
 
         .input-group input:focus {
             outline: none;
-            border-color: var(--accent-cyan);
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.15);
+            border-color: var(--accent-purple);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .login-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-cyan) 100%);
+            background: var(--accent-purple);
             border: none;
             border-radius: 12px;
-            color: #030712;
+            color: #FFFFFF;
             font-family: 'Outfit', sans-serif;
             font-weight: 600;
             font-size: 1rem;
@@ -137,8 +132,9 @@
         }
 
         .login-btn:hover {
+            background: var(--accent-cyan);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3);
+            box-shadow: 0 10px 15px rgba(2, 132, 199, 0.15);
         }
 
         .login-error {
@@ -191,9 +187,9 @@
         }
 
         .badge {
-            background: rgba(0, 242, 254, 0.1);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            color: var(--accent-cyan);
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            color: var(--accent-purple);
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 0.75rem;
@@ -202,8 +198,8 @@
         }
 
         .logout-btn {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
             color: var(--accent-red);
             padding: 8px 16px;
             border-radius: 10px;
@@ -245,7 +241,8 @@
             justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 12px;
-            color: #fff;
+            color: var(--text-main);
+            font-weight: 800;
         }
 
         /* Panel 1: Connected Devices */
@@ -259,12 +256,12 @@
         }
 
         .device-item {
-            background: rgba(255, 255, 255, 0.02);
+            background: #F8FAFC;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 16px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -272,9 +269,9 @@
 
         .device-item:hover,
         .device-item.active {
-            background: rgba(0, 242, 254, 0.05);
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.05);
+            background: #FFFFFF;
+            border-color: var(--accent-purple);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
         }
 
         .device-info {
@@ -332,7 +329,7 @@
             position: absolute;
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: #CBD5E1;
             transition: .4s;
             border-radius: 20px;
             border: 1px solid var(--border-color);
@@ -345,20 +342,32 @@
             width: 14px;
             left: 2px;
             bottom: 2px;
-            background-color: var(--text-muted);
+            background-color: #FFFFFF;
             transition: .4s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         input:checked + .slider {
-            background-color: rgba(0, 242, 254, 0.2);
-            border-color: var(--accent-cyan);
+            background-color: var(--accent-purple);
+            border-color: var(--accent-purple);
         }
 
         input:checked + .slider:before {
             transform: translateX(16px);
-            background-color: var(--accent-cyan);
-            box-shadow: 0 0 8px var(--accent-cyan);
+            background-color: #FFFFFF;
+        }
+
+        .req-stream-btn {
+            color: var(--text-muted);
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .req-stream-btn:hover {
+            color: var(--accent-purple);
         }
 
         /* Panel 2: Live Monitor Viewer */
@@ -410,6 +419,7 @@
             border: 1px solid var(--border-color);
             font-size: 0.75rem;
             font-family: 'Fira Code', monospace;
+            color: #F8FAFC; /* Force light text on dark overlay */
         }
 
         /* Panel 3: Remote Action Controller */
@@ -421,7 +431,7 @@
         }
 
         .ctrl-btn {
-            background: rgba(255, 255, 255, 0.03);
+            background: #F8FAFC;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 14px;
@@ -439,8 +449,8 @@
         }
 
         .ctrl-btn:hover {
-            background: rgba(0, 242, 254, 0.08);
-            border-color: var(--accent-cyan);
+            background: #F1F5F9;
+            border-color: var(--accent-purple);
             transform: translateY(-1px);
         }
 
@@ -471,7 +481,7 @@
         }
 
         .dpad-btn {
-            background: rgba(255, 255, 255, 0.05);
+            background: #F8FAFC;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             color: var(--text-main);
@@ -483,8 +493,8 @@
         }
 
         .dpad-btn:hover {
-            background: rgba(0, 242, 254, 0.15);
-            border-color: var(--accent-cyan);
+            background: #F1F5F9;
+            border-color: var(--accent-purple);
             transform: scale(1.05);
         }
         
@@ -497,11 +507,11 @@
         .dpad-center { 
             grid-column: 2; 
             grid-row: 2; 
-            background: rgba(0, 242, 254, 0.1); 
-            border-color: rgba(0, 242, 254, 0.3);
+            background: rgba(37, 99, 235, 0.1); 
+            border-color: var(--accent-purple);
             font-family: 'Outfit', sans-serif;
             font-weight: bold;
-            color: var(--accent-cyan);
+            color: var(--accent-purple);
             font-size: 0.9rem;
         }
         .dpad-right { grid-column: 3; grid-row: 2; }
@@ -515,7 +525,7 @@
         }
 
         .action-form {
-            background: rgba(255, 255, 255, 0.01);
+            background: #F8FAFC;
             border: 1px solid var(--border-color);
             padding: 14px;
             border-radius: 12px;
@@ -525,7 +535,7 @@
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--accent-cyan);
+            color: var(--accent-purple);
             margin-bottom: 8px;
             font-weight: 600;
         }
@@ -538,22 +548,22 @@
         .action-input-row input {
             flex: 1;
             padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
+            background: #FFFFFF;
+            border: 1px solid #CBD5E1;
             border-radius: 8px;
-            color: #fff;
+            color: var(--text-main);
             font-size: 0.85rem;
         }
 
         .action-input-row input:focus {
             outline: none;
-            border-color: var(--accent-cyan);
+            border-color: var(--accent-purple);
         }
 
         .action-submit {
             background: var(--accent-purple);
             border: none;
-            color: #030712;
+            color: #FFFFFF;
             padding: 8px 12px;
             border-radius: 8px;
             font-weight: 600;
@@ -574,7 +584,7 @@
         }
 
         .log-container {
-            background: #030712;
+            background: #F1F5F9;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 16px;
@@ -582,7 +592,7 @@
             font-size: 0.8rem;
             height: 120px;
             overflow-y: auto;
-            color: #A7F3D0;
+            color: #0F172A;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -691,15 +701,18 @@
 
             <!-- TV Screen Stream Panel -->
             <div class="panel">
-                <h2 class="panel-title">Live Remote Monitor</h2>
-                <div class="stream-view-container">
+                <h2 class="panel-title">
+                    Live Remote Monitor
+                    <button class="action-submit" style="float: right; padding: 4px 10px; font-size: 0.75rem;" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+                </h2>
+                <div class="stream-view-container" id="streamContainer">
                     <div id="streamStatusOverlay" class="stream-status-overlay" style="display: none;">
                         <span
                             style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent-red); animation: pulse-glow 1s infinite;"></span>
                         <span id="activeDeviceIdLabel">TV-HAIER-01</span> &bull; LIVE FEED
                     </div>
 
-                    <img id="tvScreenStream" class="stream-screen" alt="TV Screen Stream">
+                    <img id="tvScreenStream" class="stream-screen" alt="TV Screen Stream" style="cursor: crosshair;">
 
                     <div id="streamPlaceholder" class="stream-placeholder">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -758,15 +771,6 @@
                         </svg>
                         Back
                     </button>
-                    <button class="ctrl-btn" onclick="triggerCommand('keyevent', 'menu')">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <line x1="4" y1="12" x2="20" y2="12"></line>
-                            <line x1="4" y1="6" x2="20" y2="6"></line>
-                            <line x1="4" y1="18" x2="20" y2="18"></line>
-                        </svg>
-                        Menu
-                    </button>
                     <button class="ctrl-btn" onclick="triggerCommand('keyevent', 'volume_up')">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -786,12 +790,15 @@
                 </div>
 
                 <div class="form-section">
-                    <!-- Push URL (Signage / Media) -->
+                    <!-- Push Signage Content (Media / PDF) -->
                     <div class="action-form">
                         <div class="form-title">Push Signage Content</div>
-                        <div class="action-input-row">
-                            <input type="url" id="signageUrl" placeholder="https://example.com/slide.mp4">
-                            <button class="action-submit" onclick="submitPushSignage()">Push</button>
+                        <div class="action-input-row" style="flex-direction: column; gap: 8px;">
+                            <input type="file" id="mediaUpload" accept="image/*,video/mp4,application/pdf" style="padding: 10px; border: 1px dashed var(--accent-purple); border-radius: 8px; cursor: pointer; background: #FFFFFF; color: var(--text-muted); font-size: 0.8rem;">
+                            <div style="display:flex; gap: 8px; width: 100%;">
+                                <input type="url" id="signageUrl" placeholder="Or enter direct URL...">
+                                <button class="action-submit" onclick="submitPushSignage()">Push</button>
+                            </div>
                         </div>
                     </div>
 
@@ -804,12 +811,19 @@
                         </div>
                     </div>
 
-                    <!-- Install App Package -->
+                    <!-- Push Voice Announcement -->
                     <div class="action-form">
-                        <div class="form-title">Remote App Installation</div>
+                        <div class="form-title">Push Voice Announcement (PA)</div>
                         <div class="action-input-row">
-                            <input type="text" id="appPackage" placeholder="com.android.chrome">
-                            <button class="action-submit" onclick="submitInstallApp()">Install</button>
+                            <button class="action-submit" id="recordVoiceBtn" onclick="toggleVoiceRecord()" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                                </svg>
+                                Start Voice Broadcast
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -997,12 +1011,23 @@
                 
                 const isStreaming = activeStreamDeviceId === tv.deviceId;
                 
+                // Monitor icon glows green if streaming, otherwise grey
+                const monitorColor = isStreaming ? 'var(--accent-green)' : 'var(--text-muted)';
+                const monitorShadow = isStreaming ? 'drop-shadow(0 0 5px var(--accent-green))' : 'none';
+
                 li.innerHTML = `
                     <div class="device-info">
                         <span class="device-name">${escapeHtml(tv.deviceId)}</span>
                         <span class="device-meta">Role: Android Client</span>
                     </div>
                     <div class="device-actions" onclick="event.stopPropagation()">
+                        <button class="req-stream-btn" onclick="requestScreenCapture('${tv.deviceId}')" title="Request TV Screen Permission Popup" style="border:none; background:transparent; cursor:pointer; margin-right: 12px; color: ${monitorColor}; filter: ${monitorShadow};">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </button>
                         <label class="switch" title="Toggle Live Stream">
                             <input type="checkbox" onchange="toggleStream('${tv.deviceId}', this.checked)" ${isStreaming ? 'checked' : ''}>
                             <span class="slider"></span>
@@ -1038,6 +1063,12 @@
             updateStreamUI();
         }
 
+        function requestScreenCapture(deviceId) {
+            logEvent("UI_EVENT", `Sent screen projection request to: ${deviceId}`);
+            socket.emit('admin_command', { deviceId: deviceId, action: 'request_screen_capture' });
+            alert("Sent screen permission request to TV! Someone must click 'Start Now' on the physical TV screen.");
+        }
+
         function selectTV(deviceId) {
             selectedTVDeviceId = deviceId;
             logEvent("UI_EVENT", `Selected device for MDM commands: ${deviceId}`);
@@ -1045,6 +1076,59 @@
             // Highlight selected item
             updateTVListUI();
         }
+
+        function toggleFullscreen() {
+            const container = document.getElementById('streamContainer');
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    logEvent("UI_EVENT", `Error enabling fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Handle Touch Clicks on Stream
+        document.getElementById('tvScreenStream').addEventListener('click', function(e) {
+            if (!activeStreamDeviceId) return;
+            
+            const rect = this.getBoundingClientRect();
+            const imgAspect = this.naturalWidth / this.naturalHeight;
+            const containerAspect = rect.width / rect.height;
+            
+            let renderWidth, renderHeight, offsetX, offsetY;
+            
+            if (imgAspect > containerAspect) {
+                renderWidth = rect.width;
+                renderHeight = rect.width / imgAspect;
+                offsetX = 0;
+                offsetY = (rect.height - renderHeight) / 2;
+            } else {
+                renderHeight = rect.height;
+                renderWidth = rect.height * imgAspect;
+                offsetX = (rect.width - renderWidth) / 2;
+                offsetY = 0;
+            }
+            
+            const clickX = e.clientX - rect.left - offsetX;
+            const clickY = e.clientY - rect.top - offsetY;
+            
+            // If click is outside the actual rendered image (in the letterbox area)
+            if (clickX < 0 || clickX > renderWidth || clickY < 0 || clickY > renderHeight) {
+                return;
+            }
+            
+            const xPercent = clickX / renderWidth;
+            const yPercent = clickY / renderHeight;
+            
+            socket.emit('admin_command', { 
+                deviceId: activeStreamDeviceId, 
+                action: 'touch', 
+                x: xPercent, 
+                y: yPercent 
+            });
+            logEvent("ADMIN_COMMAND", `Sent touch event to ${activeStreamDeviceId} at (${(xPercent*100).toFixed(1)}%, ${(yPercent*100).toFixed(1)}%)`);
+        });
 
         function updateStreamUI() {
             const screenImg = document.getElementById('tvScreenStream');
@@ -1080,24 +1164,61 @@
             socket.emit('admin_command', payload);
         }
 
-        function submitPushSignage() {
-            const urlInput = document.getElementById('signageUrl');
-            const url = urlInput.value.trim();
-            if (!url) return;
-
+        async function submitPushSignage() {
             if (!selectedTVDeviceId) {
-                alert("Please select a registered TV first!");
+                alert("Please select a TV from the Registered Devices list first.");
                 return;
             }
 
-            const payload = {
-                deviceId: selectedTVDeviceId,
-                action: 'push_url',
-                url: url
-            };
+            const fileInput = document.getElementById('mediaUpload');
+            const urlInput = document.getElementById('signageUrl');
+            const btn = event.target;
+            
+            let targetUrl = urlInput.value.trim();
 
-            logEvent("ADMIN_COMMAND", `Push signage URL: "${url}" to ${selectedTVDeviceId}`);
-            socket.emit('admin_command', payload);
+            if (fileInput.files.length > 0) {
+                btn.innerText = "Uploading...";
+                btn.disabled = true;
+                
+                const formData = new FormData();
+                formData.append('mediaFile', fileInput.files[0]);
+
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        targetUrl = `/view/${result.filename}`;
+                        logEvent("SYSTEM", `Uploaded file successfully: ${result.filename}`);
+                    } else {
+                        alert("Upload failed: " + result.message);
+                        btn.innerText = "Push";
+                        btn.disabled = false;
+                        return;
+                    }
+                } catch (e) {
+                    alert("Upload error: " + e.message);
+                    btn.innerText = "Push";
+                    btn.disabled = false;
+                    return;
+                }
+                
+                btn.innerText = "Push";
+                btn.disabled = false;
+            }
+
+            if (!targetUrl) {
+                alert("Please select a file to upload or enter a URL.");
+                return;
+            }
+
+            logEvent("UI_EVENT", `Pushing Signage URL: ${targetUrl}`);
+            socket.emit('admin_command', { deviceId: selectedTVDeviceId, action: 'push_url', url: targetUrl });
+            
+            fileInput.value = '';
             urlInput.value = '';
         }
 
@@ -1122,25 +1243,71 @@
             toastInput.value = '';
         }
 
-        function submitInstallApp() {
-            const appInput = document.getElementById('appPackage');
-            const packageId = appInput.value.trim();
-            if (!packageId) return;
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        async function toggleVoiceRecord() {
+            const btn = document.getElementById('recordVoiceBtn');
+            
+            if (isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                btn.style.background = 'var(--accent-purple)';
+                return;
+            }
 
             if (!selectedTVDeviceId) {
                 alert("Please select a registered TV first!");
                 return;
             }
 
-            const payload = {
-                deviceId: selectedTVDeviceId,
-                action: 'install_app',
-                package: packageId
-            };
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
 
-            logEvent("ADMIN_COMMAND", `Install package command: "${packageId}" on ${selectedTVDeviceId}`);
-            socket.emit('admin_command', payload);
-            appInput.value = '';
+                mediaRecorder.ondataavailable = e => {
+                    audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    btn.innerHTML = "Uploading Voice...";
+                    btn.disabled = true;
+                    
+                    const formData = new FormData();
+                    formData.append('mediaFile', audioBlob, 'voice.webm');
+
+                    try {
+                        const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                        const result = await response.json();
+                        if (result.success) {
+                            // Point directly to the raw file, not the HTML wrapper, for native MediaPlayer
+                            const targetUrl = `/uploads/${result.filename}`; 
+                            logEvent("SYSTEM", `Uploaded voice message successfully.`);
+                            socket.emit('admin_command', { deviceId: selectedTVDeviceId, action: 'play_audio', url: targetUrl });
+                            logEvent("ADMIN_COMMAND", `Sent voice broadcast request to ${selectedTVDeviceId}`);
+                        }
+                    } catch (e) {
+                        alert("Voice upload failed: " + e.message);
+                    }
+                    
+                    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg> Start Voice Broadcast`;
+                    btn.disabled = false;
+                    
+                    // Release microphone hardware
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                btn.innerHTML = "⏹ Stop & Broadcast Audio";
+                btn.style.background = 'var(--accent-red)';
+                
+            } catch (e) {
+                alert("Microphone access denied or not available: " + e.message);
+            }
         }
     </script>
 </body>
