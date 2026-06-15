@@ -140,9 +140,12 @@ io.on('connection', (socket) => {
     });
 
     // Relay screen frames from TV to Dashboard
-    socket.on('screen_frame', (data) => {
+    socket.on('screen_frame', (data, callback) => {
         console.log(`[${new Date().toISOString()}] DEBUG: Server received frame from:`, data.deviceId, "Frame size:", data.frame.length);
         io.to('dashboard').emit('stream_frame_render', { deviceId: socket.deviceId, frame: data.frame });
+        if (typeof callback === 'function') {
+            callback();
+        }
     });
 
     // Relay actions from Dashboard to TV
