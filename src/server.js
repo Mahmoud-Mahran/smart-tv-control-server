@@ -127,6 +127,9 @@ app.get('/view/:filename', (req, res) => {
     res.send(htmlContent);
 });
 
+// Track connected TVs to sync dashboard on refresh
+const connectedTVs = new Map();
+
 // WebSocket Hub
 io.on('connection', (socket) => {
     console.log(`Connected: ${socket.id}`);
@@ -137,8 +140,14 @@ io.on('connection', (socket) => {
         socket.role = data.role;
         if (data.role === 'tv') {
             socket.deviceId = data.deviceId;
+            connectedTVs.set(data.deviceId, socket.id);
             console.log(`TV Registered: ${data.deviceId}`);
             io.to('dashboard').emit('tv_status_change', { deviceId: data.deviceId, status: 'online' });
+        } else if (data.role === 'dashboard') {
+            // Instantly sync the dashboard with currently connected TVs
+            for (const deviceId of connectedTVs.keys()) {
+                socket.emit('tv_status_change', { deviceId: deviceId, status: 'online' });
+            }
         }
     });
 
@@ -158,6 +167,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         if (socket.role === 'tv' && socket.deviceId) {
+            connectedTVs.delete(socket.deviceId);
             io.to('dashboard').emit('tv_status_change', { deviceId: socket.deviceId, status: 'offline' });
         } else if (socket.role === 'dashboard') {
             // If the operator closes the browser, ensure TVs stop capturing to save resources
