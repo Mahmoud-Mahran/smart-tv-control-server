@@ -4,6 +4,8 @@ const { Server } = require('socket.io');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const { initDB, User, Device, AuditLog } = require('./db');
+const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(express.json());
@@ -17,14 +19,23 @@ const io = new Server(server, {
     maxHttpBufferSize: 1e7
 });
 
-// Mock Auth Endpoint for TV Login
-app.post('/api/tv/login', (req, res) => {
+// Database Auth Endpoint for TV Login
+app.post('/api/tv/login', async (req, res) => {
     const { username, password } = req.body;
-    // Hardcoded for PoC
-    if (username === "school_admin" && password === "password123") {
-        return res.json({ success: true, token: "mock-jwt-token-xyz", deviceId: "tv-haier-01" });
+    try {
+        const user = await User.findOne({ where: { username } });
+        if (user) {
+            const isValid = await bcrypt.compare(password, user.password_hash);
+            if (isValid) {
+                // In Phase 2 this token will be a real signed JWT
+                return res.json({ success: true, token: "mock-jwt-token-xyz", username: user.username });
+            }
+        }
+        return res.status(401).json({ success: false, message: "Invalid credentials" });
+    } catch (err) {
+        console.error("Login DB error:", err);
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
-    return res.status(401).json({ success: false, message: "Invalid credentials" });
 });
 
 // Configure multer storage
@@ -135,15 +146,30 @@ io.on('connection', (socket) => {
     console.log(`Connected: ${socket.id}`);
 
     // Identify if connection is Dashboard or TV
-    socket.on('register', (data) => {
+    socket.on('register', async (data) => {
         socket.join(data.role); // 'dashboard' or 'tv'
         socket.role = data.role;
         if (data.role === 'tv') {
             socket.deviceId = data.deviceId;
             connectedTVs.set(data.deviceId, socket.id);
             console.log(`TV Registered: ${data.deviceId}`);
+            
+            // Upsert Device to Database
+            try {
+                await Device.upsert({
+                    device_id: data.deviceId,
+                    status: 'online',
+                    last_seen: new Date()
+                });
+            } catch (err) {
+                console.error("DB Error upserting device:", err);
+            }
+
             io.to('dashboard').emit('tv_status_change', { deviceId: data.deviceId, status: 'online' });
         } else if (data.role === 'dashboard') {
+            // Store admin username if provided (Phase 2 token implementation will attach this securely)
+            if (data.username) socket.username = data.username;
+            
             // Instantly sync the dashboard with currently connected TVs
             for (const deviceId of connectedTVs.keys()) {
                 socket.emit('tv_status_change', { deviceId: deviceId, status: 'online' });
@@ -161,13 +187,32 @@ io.on('connection', (socket) => {
     });
 
     // Relay actions from Dashboard to TV
-    socket.on('admin_command', (data) => {
+    socket.on('admin_command', async (data) => {
+        // Log to Audit Database
+        try {
+            await AuditLog.create({
+                admin_username: socket.username || 'unknown_admin',
+                target_device_id: data.deviceId || 'broadcast',
+                action_type: data.action || 'unknown_action'
+            });
+        } catch (err) {
+            console.error("DB Error creating audit log:", err);
+        }
+        
         io.to('tv').emit('execute_command', data);
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         if (socket.role === 'tv' && socket.deviceId) {
             connectedTVs.delete(socket.deviceId);
+            
+            // Mark as offline in DB
+            try {
+                await Device.update({ status: 'offline' }, { where: { device_id: socket.deviceId } });
+            } catch (err) {
+                console.error("DB Error marking device offline:", err);
+            }
+
             io.to('dashboard').emit('tv_status_change', { deviceId: socket.deviceId, status: 'offline' });
         } else if (socket.role === 'dashboard') {
             // If the operator closes the browser, ensure TVs stop capturing to save resources
@@ -177,4 +222,9 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(3000, () => console.log('Server running on port 3000'));
+// Start the server and initialize the DB
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, async () => {
+    console.log(`Smart TV Control MDM Server running on port ${PORT}`);
+    await initDB();
+});

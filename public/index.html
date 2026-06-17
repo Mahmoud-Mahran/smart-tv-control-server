@@ -937,6 +937,7 @@
                 if (data.success) {
                     authToken = data.token;
                     localStorage.setItem('auth_token', data.token);
+                    if (data.username) localStorage.setItem('username', data.username);
                     showDashboard();
                 } else {
                     errorDiv.innerText = data.message || "Invalid credentials";
@@ -970,7 +971,8 @@
             socket.on('connect', () => {
                 logEvent("WS_CLIENT", `Connected! Socket ID: ${socket.id}`);
                 // Register as operator dashboard
-                socket.emit('register', { role: 'dashboard' });
+                const username = localStorage.getItem('username') || 'Unknown';
+                socket.emit('register', { role: 'dashboard', username: username });
                 logEvent("WS_CLIENT", "Registered as 'dashboard' hub reader.");
             });
 
