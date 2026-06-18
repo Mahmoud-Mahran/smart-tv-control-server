@@ -842,15 +842,24 @@
                     <!-- Push Voice Announcement -->
                     <div class="action-form">
                         <div class="form-title">Push Voice Announcement (PA)</div>
-                        <button class="action-submit" id="recordVoiceBtn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="toggleVoiceRecord()">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
-                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                                <line x1="12" y1="19" x2="12" y2="23"></line>
-                                <line x1="8" y1="23" x2="16" y2="23"></line>
-                            </svg>
-                            Start Recording
-                        </button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="action-submit" id="recordVoiceBtn" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="toggleVoiceRecord()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                                </svg>
+                                Record Message
+                            </button>
+                            <button class="action-submit" id="livePABtn" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent-cyan);" onclick="toggleLivePA()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                </svg>
+                                Live PA Broadcast
+                            </button>
+                        </div>
                         <div id="voicePlaybackContainer" style="display: none; flex-direction: column; gap: 8px; margin-top: 10px;">
                             <audio id="voiceAudioPlayer" controls style="width: 100%; height: 35px;"></audio>
                             <div style="display: flex; gap: 8px;">
@@ -1285,6 +1294,83 @@
         let isRecording = false;
         let recordStartTime = 0;
         let stagedVoiceBlob = null;
+
+        let isLivePAActive = false;
+        let liveAudioContext;
+        let liveAudioStream;
+        let liveAudioProcessor;
+
+        async function toggleLivePA() {
+            const btn = document.getElementById('livePABtn');
+
+            if (isLivePAActive) {
+                // Stop Live PA
+                isLivePAActive = false;
+                btn.style.background = 'var(--accent-cyan)';
+                btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg> Live PA Broadcast`;
+                
+                if (liveAudioProcessor) {
+                    liveAudioProcessor.disconnect();
+                    liveAudioProcessor = null;
+                }
+                if (liveAudioContext) {
+                    liveAudioContext.close();
+                    liveAudioContext = null;
+                }
+                if (liveAudioStream) {
+                    liveAudioStream.getTracks().forEach(t => t.stop());
+                    liveAudioStream = null;
+                }
+                logEvent("SYSTEM", "Live PA Broadcast stopped.");
+                return;
+            }
+
+            if (!selectedTVDeviceId) {
+                alert("Please select a registered TV first!");
+                return;
+            }
+
+            try {
+                liveAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                
+                // We force 44100 to match the Android AudioTrack requirements natively.
+                liveAudioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
+                const source = liveAudioContext.createMediaStreamSource(liveAudioStream);
+                
+                liveAudioProcessor = liveAudioContext.createScriptProcessor(4096, 1, 1);
+
+                source.connect(liveAudioProcessor);
+                liveAudioProcessor.connect(liveAudioContext.destination);
+
+                liveAudioProcessor.onaudioprocess = (e) => {
+                    if (!isLivePAActive) return;
+                    
+                    const float32Array = e.inputBuffer.getChannelData(0);
+                    const int16Array = new Int16Array(float32Array.length);
+                    
+                    // Convert Float32 (-1.0 to 1.0) to Int16 (-32768 to 32767)
+                    for (let i = 0; i < float32Array.length; i++) {
+                        let s = Math.max(-1, Math.min(1, float32Array[i]));
+                        int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                    }
+                    
+                    // Emit chunk
+                    socket.emit('live_audio_chunk', {
+                        deviceId: selectedTVDeviceId,
+                        chunk: int16Array.buffer
+                    });
+                };
+
+                isLivePAActive = true;
+                btn.style.background = 'var(--accent-red)';
+                btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg> Stop Live PA`;
+                logEvent("SYSTEM", "Live PA Broadcast started. Transmitting raw PCM audio...");
+
+            } catch (err) {
+                alert("Microphone access denied: " + err.message);
+                console.error(err);
+            }
+        }
 
         async function toggleVoiceRecord() {
             const btn = document.getElementById('recordVoiceBtn');

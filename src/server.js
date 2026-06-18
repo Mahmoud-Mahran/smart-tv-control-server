@@ -202,6 +202,11 @@ io.on('connection', (socket) => {
         io.to('tv').emit('execute_command', data);
     });
 
+    // Relay live PCM audio chunks from Dashboard to TV
+    socket.on('live_audio_chunk', (data) => {
+        io.to('tv').emit('play_live_audio', data);
+    });
+
     socket.on('disconnect', async () => {
         if (socket.role === 'tv' && socket.deviceId) {
             connectedTVs.delete(socket.deviceId);
